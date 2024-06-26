@@ -1,0 +1,135 @@
+---
+- name: Create workers VMs
+
+  vars:
+    proxmox_user: ansible@pam
+    proxmox_pass: ansible
+    proxmox_host: moxi
+    proxmox_node: moxi
+    vm1_name: talos-w1
+    vm2_name: talos-w2
+    vm3_name: talos-w3
+    boot_iso: {"ide2":"local:iso/TalosOS-metal-amd64-QEMU.iso,media=cdrom"}
+    storage: {"virtio0":"local-lvm:32,iothread=1"}
+  hosts: hypervisor
+
+  tasks:
+  - name: Create "{{vm1_name}}"
+    community.general.proxmox_kvm:
+      api_user: "{{proxmox_user}}"
+      api_password: "{{proxmox_pass}}"
+      api_host: "{{proxmox_host}}"
+      agent: enabled=1
+      cpu: x86-64-v2-AES
+      cores: 2
+      memory: 2048
+      name: "{{vm1_name}}"  # The target VM name
+      vmid: 210
+      node: "{{proxmox_node}}"
+      storage: local-lvm
+      net: {"net0":"virtio=BC:24:11:6E:94:D7,bridge=vmbr0"}
+      virtio: "{{storage}}"
+      bootdisk: 'virtio0'
+      ide: "{{boot_iso}}"
+    register: build
+
+  # - name: Create "{{vm2_name}}"
+  #   community.general.proxmox_kvm:
+  #     api_user: "{{proxmox_user}}"
+  #     api_password: "{{proxmox_pass}}"
+  #     api_host: "{{proxmox_host}}"
+  #     agent: enabled=1
+  #     cpu: x86-64-v2-AES
+  #     cores: 2
+  #     memory: 2048
+  #     name: "{{vm2_name}}"  # The target VM name
+  #     vmid: 211
+  #     node: "{{proxmox_node}}"
+  #     storage: local-lvm
+  #     net: {"net0":"virtio=BC:24:11:55:2A:C9,bridge=vmbr0"}
+  #     virtio: "{{storage}}"
+  #     bootdisk: 'virtio0'
+  #     ide: "{{boot_iso}}"
+
+  # - name: Create "{{vm3_name}}"
+  #   community.general.proxmox_kvm:
+  #     api_user: "{{proxmox_user}}"
+  #     api_password: "{{proxmox_pass}}"
+  #     api_host: "{{proxmox_host}}"
+  #     agent: enabled=1
+  #     cpu: x86-64-v2-AES
+  #     cores: 2
+  #     memory: 2048
+  #     name: "{{vm3_name}}"  # The target VM name
+  #     vmid: 212
+  #     node: "{{proxmox_node}}"
+  #     storage: local-lvm
+  #     net: {"net0":"virtio=24:24:11:AA:88:D4,bridge=vmbr0"}
+  #     virtio: "{{storage}}"
+  #     bootdisk: 'virtio0'
+  #     ide: "{{boot_iso}}"
+
+  - name: Start "{{vm1_name}}"
+    community.general.proxmox_kvm:
+      api_user: "{{proxmox_user}}"
+      api_password: "{{proxmox_pass}}"
+      api_host: "{{proxmox_host}}"
+      name: "{{vm1_name}}"
+      node: "{{proxmox_node}}"
+      state: started
+
+  # - name: Start "{{vm2_name}}"
+  #   community.general.proxmox_kvm:
+  #     api_user: "{{proxmox_user}}"
+  #     api_password: "{{proxmox_pass}}"
+  #     api_host: "{{proxmox_host}}"
+  #     name: "{{vm2_name}}"
+  #     node: "{{proxmox_node}}"
+  #     state: started
+
+  # - name: Start "{{vm3_name}}"
+  #   community.general.proxmox_kvm:
+  #     api_user: "{{proxmox_user}}"
+  #     api_password: "{{proxmox_pass}}"
+  #     api_host: "{{proxmox_host}}"
+  #     name: "{{vm3_name}}"
+  #     node: "{{proxmox_node}}"
+  #     state: started
+
+  - name: Get "{{vm1_name}}" state
+    community.general.proxmox_kvm:
+      api_user: "{{proxmox_user}}"
+      api_password: "{{proxmox_pass}}"
+      api_host: "{{proxmox_host}}"
+      name: "{{vm1_name}}"
+      node: "{{proxmox_node}}"
+      state: current
+    register: state1
+
+  # - name: Get "{{vm2_name}}" state
+  #   community.general.proxmox_kvm:
+  #     api_user: "{{proxmox_user}}"
+  #     api_password: "{{proxmox_pass}}"
+  #     api_host: "{{proxmox_host}}"
+  #     name: "{{vm2_name}}"
+  #     node: "{{proxmox_node}}"
+  #     state: current
+  #   register: state2
+
+  # - name: Get "{{vm3_name}}" state
+  #   community.general.proxmox_kvm:
+  #     api_user: "{{proxmox_user}}"
+  #     api_password: "{{proxmox_pass}}"
+  #     api_host: "{{proxmox_host}}"
+  #     name: "{{vm3_name}}"
+  #     node: "{{proxmox_node}}"
+  #     state: current
+  #   register: state3
+
+  - name: Debug vm state
+    ansible.builtin.debug:
+      var:
+        state1,
+        build
+#        state2.msg,
+#        state3.msg

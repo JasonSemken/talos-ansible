@@ -1,0 +1,44 @@
+---
+- name: Destroy worker VMs
+
+  vars:
+    proxmox_user: ansible@pam
+    proxmox_pass: ansible
+    proxmox_host: moxi
+    proxmox_node: moxi
+    vm1_name: talos-w1
+    vm2_name: talos-w2
+    vm3_name: talos-w3
+
+  hosts: hypervisor
+
+  tasks:
+  - name: Destroy worker 1
+    community.general.proxmox_kvm:
+      api_user: "{{proxmox_user}}"
+      api_password: "{{proxmox_pass}}"
+      api_host: "{{proxmox_host}}"
+      name: "{{vm1_name}}"
+      node: "{{proxmox_node}}"
+      state: absent
+      force: true
+
+  - name: Destroy worker 2
+    community.general.proxmox_kvm:
+      api_user: "{{proxmox_user}}"
+      api_password: "{{proxmox_pass}}"
+      api_host: "{{proxmox_host}}"
+      name: "{{vm2_name}}"
+      node: "{{proxmox_node}}"
+      state: absent
+      force: true
+
+  - name: Destroy worker 3
+    community.general.proxmox_kvm:
+      api_user: "{{proxmox_user}}"
+      api_password: "{{proxmox_pass}}"
+      api_host: "{{proxmox_host}}"
+      name: "{{vm3_name}}"
+      node: "{{proxmox_node}}"
+      state: absent
+      force: true

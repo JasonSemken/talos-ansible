@@ -1,0 +1,22 @@
+---
+- name: Destroy worker VMs
+
+  vars:
+    proxmox_user: ansible@pam
+    proxmox_pass: ansible
+    proxmox_host: moxi
+    proxmox_node: moxi
+    vm0_name: talos-control
+
+  hosts: hypervisor
+
+  tasks:
+  - name: Destroy control
+    community.general.proxmox_kvm:
+      api_user: "{{proxmox_user}}"
+      api_password: "{{proxmox_pass}}"
+      api_host: "{{proxmox_host}}"
+      name: "{{vm0_name}}"
+      node: "{{proxmox_node}}"
+      state: absent
+      force: true

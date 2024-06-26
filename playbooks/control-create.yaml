@@ -1,0 +1,53 @@
+---
+- name: Build {{vm_name}}
+
+  vars:
+    proxmox_user: ansible@pam
+    proxmox_pass: ansible
+    proxmox_host: moxi
+    proxmox_node: moxi
+    vm_name: talos-control
+
+  hosts: hypervisor
+
+  tasks:
+  - name: Create {{vm_name}}
+    community.general.proxmox_kvm:
+      api_user: "{{proxmox_user}}"
+      api_password: "{{proxmox_pass}}"
+      api_host: "{{proxmox_host}}"
+      agent: enabled=1
+      cpu: x86-64-v2-AES
+      cores: 2
+      memory: 4096
+      name: "{{vm_name}}"  # The target VM name
+      vmid: 200
+      node: "{{proxmox_node}}"
+      storage: local-lvm
+      net: {"net0":"virtio=BC:24:11:BC:56:FD,bridge=vmbr0"}
+      virtio: {"virtio0":"local-lvm:32,iothread=1"}
+      bootdisk: 'virtio0'
+      ide: {"ide2":"local:iso/TaloOS-metal-amd64.iso,media=cdrom"}
+
+  - name: Start {{vm_name}}
+    community.general.proxmox_kvm:
+      api_user: "{{proxmox_user}}"
+      api_password: "{{proxmox_pass}}"
+      api_host: "{{proxmox_host}}"
+      name: "{{vm_name}}"
+      node: "{{proxmox_node}}"
+      state: started
+
+  - name: Get {{vm_name}} state
+    community.general.proxmox_kvm:
+      api_user: "{{proxmox_user}}"
+      api_password: "{{proxmox_pass}}"
+      api_host: "{{proxmox_host}}"
+      name: "{{vm_name}}"
+      node: "{{proxmox_node}}"
+      state: current
+    register: state
+
+  - name: Debug {{vm_name}} state
+    ansible.builtin.debug:
+      var: state.msg

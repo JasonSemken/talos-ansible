@@ -1,0 +1,81 @@
+---
+- name: Stop worker VMs
+
+  vars:
+    proxmox_user: ansible@pam
+    proxmox_pass: ansible
+    proxmox_host: moxi
+    proxmox_node: moxi
+    vm1_name: talos-w1
+    vm2_name: talos-w2
+    vm3_name: talos-w3
+
+  hosts: hypervisor
+
+  tasks:
+  - name: Stop worker 1
+    community.general.proxmox_kvm:
+      api_user: "{{proxmox_user}}"
+      api_password: "{{proxmox_pass}}"
+      api_host: "{{proxmox_host}}"
+      name: "{{vm1_name}}"
+      node: "{{proxmox_node}}"
+      state: stopped
+      force: true
+
+  - name: Stop worker 2
+    community.general.proxmox_kvm:
+      api_user: "{{proxmox_user}}"
+      api_password: "{{proxmox_pass}}"
+      api_host: "{{proxmox_host}}"
+      name: "{{vm2_name}}"
+      node: "{{proxmox_node}}"
+      state: stopped
+      force: true
+
+  - name: Stop worker 3
+    community.general.proxmox_kvm:
+      api_user: "{{proxmox_user}}"
+      api_password: "{{proxmox_pass}}"
+      api_host: "{{proxmox_host}}"
+      name: "{{vm3_name}}"
+      node: "{{proxmox_node}}"
+      state: stopped
+      force: true
+
+  - name: Get worker 1 state
+    community.general.proxmox_kvm:
+      api_user: "{{proxmox_user}}"
+      api_password: "{{proxmox_pass}}"
+      api_host: "{{proxmox_host}}"
+      name: "{{vm1_name}}"
+      node: "{{proxmox_node}}"
+      state: current
+    register: state1
+
+  - name: Get worker 2 state
+    community.general.proxmox_kvm:
+      api_user: "{{proxmox_user}}"
+      api_password: "{{proxmox_pass}}"
+      api_host: "{{proxmox_host}}"
+      name: "{{vm2_name}}"
+      node: "{{proxmox_node}}"
+      state: current
+    register: state2
+
+  - name: Get worker 3 state
+    community.general.proxmox_kvm:
+      api_user: "{{proxmox_user}}"
+      api_password: "{{proxmox_pass}}"
+      api_host: "{{proxmox_host}}"
+      name: "{{vm3_name}}"
+      node: "{{proxmox_node}}"
+      state: current
+    register: state3
+
+  - name: Debug vm state
+    ansible.builtin.debug:
+      var:
+        state1.status,
+        state2.status,
+        state3.status
