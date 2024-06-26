@@ -1,8 +1,8 @@
 hypervisor:
   hosts:
-    moxi:
-      ansible_host: 10.250.0.100
+    moxi: #Proxmox host identifier , this is used purely for ansible references in playbooks. This can be left for ease of first deployment.
+      ansible_host: 10.250.0.100 # The IP or FQDN of your Proxmox host
   vars:
-    ansible_user: ansible 
-    ansible_password: ansible
+    ansible_user: ansible # Created user on the Proxmox host
+    ansible_password: ansible # Users password on the Proxmox host
   

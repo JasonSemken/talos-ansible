@@ -39,12 +39,6 @@ machine:
         # Configures host DNS caching resolver.
         hostDNS:
             enabled: true # Enable host DNS caching resolver.
-    # # Example configuration for cloudflare ntp server.
-    time:
-    #     disabled: false # Indicates if the time service is disabled for the machine.
-    #     # description: |
-        servers:
-            - 10.250.0.1
 # Provides cluster specific configuration options.
 cluster:
     id: 3Iu2l_caa0oeTkaKlhSZEjzyYKujEs-SYGPHZzeRAA0= # Globally unique identifier for this cluster (base64 encoded random 32 bytes).
